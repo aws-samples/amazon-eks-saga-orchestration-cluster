@@ -43,3 +43,9 @@ managedNodeGroups:
     labels: { role: db }
     instanceType: m5.large
     desiredCapacity: 3
+    privateNetworking: true
+  - name: ng-web
+    labels: { role: web }
+    instanceType: m5.large
+    desiredCapacity: 3
+    privateNetworking: false    
