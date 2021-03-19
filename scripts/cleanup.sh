@@ -28,6 +28,10 @@ remove_lb() {
 }
 
 remove_cluster() {
+  echo 'Detaching policy from node IAM role'
+  STACK_NAME=eksctl-${EKS_CLUSTER}-nodegroup-ng-db
+  ROLE_NAME=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId')
+  aws iam detach-role-policy --role-name $ROLE_NAME --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
   echo 'Removing cluster eks-saga-orchestration'
   eksctl delete cluster --name eks-saga-orchestration
 }
