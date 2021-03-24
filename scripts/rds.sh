@@ -3,30 +3,32 @@
 set -e
 
 r_setup() {
-  echo 'Updating RDS security group for traffic from EKS VPC'
-  EKS_VPC=$1
-  RDS_VPC=$2
-  RDS_DB_ID=$3
-  #
+  echo 'Updating RDS security group'
+  STACK_NAME=$1
+  EKS_VPC=$2
+  RDS_VPC=$3
+  RDS_DB_ID=$4
+
   RDS_SG=`aws rds describe-db-instances --db-instance-identifier ${RDS_DB_ID} --query 'DBInstances[0].VpcSecurityGroups[0].VpcSecurityGroupId' --output text`
+  SUBNETS=(`aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select((.ResourceType=="AWS::EC2::Subnet") and (.LogicalResourceId | startswith("SubnetPrivate"))) | .PhysicalResourceId'`)
   
-  NODES=(`kubectl get no --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}'`)
-  for n in "${NODES[@]}"
+  for s in "${SUBNETS[@]}"
   do
-    NODE_IP=`aws ec2 describe-instances --filter Name=private-dns-name,Values=${n} Name=vpc-id,Values=${EKS_VPC} --query 'Reservations[0].Instances[0].PublicIpAddress' --output text`
-    aws ec2 authorize-security-group-ingress --group-id ${RDS_SG} --protocol tcp --port 3306 --cidr ${NODE_IP}/32
+    CIDR_BLOCK=`aws ec2 describe-subnets --subnet-ids ${s} --query 'Subnets[0].CidrBlock' --output text`
+    aws ec2 authorize-security-group-ingress --group-id ${RDS_SG} --protocol tcp --port 3306 --cidr ${CIDR_BLOCK}
   done
-  #
+
   echo "${RDS_SG} in RDS VPC ${RDS_VPC} updated to allow MySQL traffic from EKS VPC ${EKS_VPC}"
 }
 
-if [[ $# -ne 3 ]] ; then
-  echo 'USAGE: ./rds.sh eksVpc rdsVpc rdsDbId'
+if [[ $# -ne 4 ]] ; then
+  echo 'USAGE: ./rds.sh stackName eksVpc rdsVpc rdsDbId'
   exit 1
 fi
 
-EKS_VPC=$1
-RDS_VPC=$2
-RDS_DB_ID=$3
+STACK_NAME=$1
+EKS_VPC=$2
+RDS_VPC=$3
+RDS_DB_ID=$4
 
-r_setup ${EKS_VPC} ${RDS_VPC} ${RDS_DB_ID}
+r_setup ${STACK_NAME} ${EKS_VPC} ${RDS_VPC} ${RDS_DB_ID}
