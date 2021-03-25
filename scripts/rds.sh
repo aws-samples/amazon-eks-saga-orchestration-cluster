@@ -35,4 +35,4 @@ RDS_VPC=$3
 RDS_DB_ID=$4
 GROUP_NAME="eks-saga-orchestration-sg"
 
-r_setup ${STACK_NAME} ${EKS_VPC} ${RDS_VPC} ${RDS_DB_ID}
+r_setup ${STACK_NAME} ${EKS_VPC} ${RDS_VPC} ${RDS_DB_ID} ${GROUP_NAME}
