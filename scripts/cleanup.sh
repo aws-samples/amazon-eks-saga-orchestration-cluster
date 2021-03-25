@@ -51,13 +51,11 @@ remove_sg() {
   for s in "${SUBNETS[@]}"
   do
     CIDR_BLOCK=`aws ec2 describe-subnets --subnet-ids ${s} --query 'Subnets[0].CidrBlock' --output text`
-    aws ec2 revoke-security-group-ingress --group-id ${RDS_SG} --protocol tcp --port 3306 --cidr --cidr ${CIDR_BLOCK}
+    aws ec2 revoke-security-group-ingress --group-id ${RDS_SG} --protocol tcp --port 3306 --cidr ${CIDR_BLOCK}
   done
 
   #
   echo "${RDS_SG} in RDS VPC ${RDS_VPC} updated to deny MySQL traffic from EKS VPC ${EKS_VPC}"  
-  aws ec2 delete-security-group --group-id ${RDS_SG}
-  echo "${RDS_SG} security group removed."
 }
 
 if [[ $# -ne 6 ]] ; then
