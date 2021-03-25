@@ -68,7 +68,7 @@ export RDS_VPC=`aws rds describe-db-instances --db-instance-identifier ${RDS_DB_
 
 ```bash
 cd ../scripts
-./rds.sh ${EKS_VPC} ${RDS_VPC} ${RDS_DB_ID}
+./rds.sh ${STACK_NAME} ${EKS_VPC} ${RDS_VPC} ${RDS_DB_ID}
 ```
 
 Verify that the cluster is up and running from the Amazon EKS console.
