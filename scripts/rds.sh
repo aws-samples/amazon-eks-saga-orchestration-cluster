@@ -8,8 +8,9 @@ r_setup() {
   EKS_VPC=$2
   RDS_VPC=$3
   RDS_DB_ID=$4
+  GROUP_NAME=$5
 
-  RDS_SG=`aws ec2 create-security-group --description "EKS Saga DB SG" --group-name "eks-saga-db-sg" --vpc-id ${RDS_VPC} --query 'GroupId' --output text`
+  RDS_SG=`aws ec2 create-security-group --description "EKS Saga DB SG" --group-name ${GROUP_NAME} --vpc-id ${RDS_VPC} --query 'GroupId' --output text`
   SUBNETS=(`aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select((.ResourceType=="AWS::EC2::Subnet") and (.LogicalResourceId | startswith("SubnetPrivate"))) | .PhysicalResourceId'`)
   
   for s in "${SUBNETS[@]}"
@@ -32,5 +33,6 @@ STACK_NAME=$1
 EKS_VPC=$2
 RDS_VPC=$3
 RDS_DB_ID=$4
+GROUP_NAME="eks-saga-orchestration-sg"
 
 r_setup ${STACK_NAME} ${EKS_VPC} ${RDS_VPC} ${RDS_DB_ID}
