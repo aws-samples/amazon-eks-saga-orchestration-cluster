@@ -56,6 +56,8 @@ remove_sg() {
 
   #
   echo "${RDS_SG} in RDS VPC ${RDS_VPC} updated to deny MySQL traffic from EKS VPC ${EKS_VPC}"  
+  aws ec2 delete-security-group --group-id ${RDS_SG}
+  echo "${RDS_SG} security group removed."
 }
 
 if [[ $# -ne 6 ]] ; then
