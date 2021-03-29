@@ -13,15 +13,8 @@ e_setup() {
   --override-existing-serviceaccounts \
   --approve
 
-  kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
-  
   helm repo add eks https://aws.github.io/eks-charts
-
-  helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
-    --set clusterName=eks-saga-orchestration \
-    --set serviceAccount.create=false \
-    --set serviceAccount.name=aws-load-balancer-controller \
-    -n kube-system
+  helm install aws-load-balancer-controller eks/aws-load-balancer-controller --set clusterName=eks-saga-orchestration --set nodeSelector.role=web -n kube-system
 }
 
 if [[ $# -ne 1 ]] ; then
