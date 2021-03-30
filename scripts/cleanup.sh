@@ -21,8 +21,7 @@ remove_lb() {
   ACCOUNT_ID=$1
 
   echo 'Removing AWS Load Balancer controller'
-  helm uninstall aws-load-balancer-controller -n kube-system
-  kubectl delete -k github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master
+  helm delete aws-load-balancer-controller -n kube-system
   eksctl delete iamserviceaccount --cluster eks-saga-orchestration --name aws-load-balancer-controller --namespace kube-system --wait
   aws iam delete-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-saga-elb-policy
 }
