@@ -36,15 +36,7 @@ sed -e 's/regionId/'"${REGION_ID}"'/g' \
   cluster.yaml | eksctl create cluster -f -
 ```
 
-1. Apply `CloudWatchAgentServerPolicy` for IAM role for the worker nodes. This is to enable Container Insights; see next point below.
-
-```bash
-STACK_NAME=eksctl-${EKS_CLUSTER}-nodegroup-ng-db
-ROLE_NAME=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId')
-aws iam attach-role-policy --role-name $ROLE_NAME --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
-```
-
-3. Set-up [Container Insights.](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html)
+2. Set-up [Container Insights.](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html)
 
 ```bash
 EKS_CLUSTER=eks-saga-orchestration
@@ -56,7 +48,7 @@ FluentBitReadFromHead='Off'
 curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluent-bit-quickstart.yaml | sed 's/{{cluster_name}}/'${ClusterName}'/;s/{{region_name}}/'${LogRegion}'/;s/{{http_server_toggle}}/"'${FluentBitHttpServer}'"/;s/{{http_server_port}}/"'${FluentBitHttpPort}'"/;s/{{read_from_head}}/"'${FluentBitReadFromHead}'"/;s/{{read_from_tail}}/"'${FluentBitReadFromTail}'"/' | kubectl apply -f - 
 ```
 
-4. Set up VPC identifiers as environment variables.
+3. Set up VPC identifiers as environment variables.
 
 ```bash
 export RDS_DB_ID=eks-saga-db
@@ -64,7 +56,7 @@ export EKS_VPC=`aws eks describe-cluster --name eks-saga-orchestration --query '
 export RDS_VPC=`aws rds describe-db-instances --db-instance-identifier ${RDS_DB_ID} --query 'DBInstances[0].DBSubnetGroup.VpcId' --output text`
 ```
 
-5. Run the following commands to enable communication between Amazon EKS and AWS RDS.
+4. Run the following commands to enable communication between Amazon EKS and AWS RDS.
 
 ```bash
 cd ../scripts
