@@ -31,7 +31,7 @@ managedNodeGroups:
   - name: ng-db
     labels: { role: db }
     instanceType: m5.large
-    desiredCapacity: 3
+    desiredCapacity: 1
     privateNetworking: true
     iam:
       attachPolicyARNs:
@@ -41,7 +41,7 @@ managedNodeGroups:
   - name: ng-web
     labels: { role: web }
     instanceType: m5.large
-    desiredCapacity: 3
+    desiredCapacity: 1
     privateNetworking: false    
     iam:
       attachPolicyARNs:
