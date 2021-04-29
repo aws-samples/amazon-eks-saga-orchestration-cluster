@@ -17,7 +17,7 @@ iam:
         namespace: kube-system
         labels: { aws-usage: "alb" }
       attachPolicyARNs:
-        - "arn:aws:iam::463113836977:policy/eks-saga-elb-policy"  
+        - "arn:aws:iam::accountId:policy/eks-saga-elb-policy"  
     - metadata:
         name: eks-saga
         namespace: eks-saga

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 remove_objects() {
   echo 'Removing trail microservice'
