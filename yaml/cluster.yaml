@@ -17,15 +17,15 @@ iam:
         namespace: kube-system
         labels: { aws-usage: "alb" }
       attachPolicyARNs:
-        - "arn:aws:iam::accountId:policy/eks-saga-elb-policy"  
+        - "arn:aws:iam::accountId:policy/elb-policy"  
     - metadata:
         name: eks-saga
         namespace: eks-saga
         labels: { aws-usage: "application" }
       attachPolicyARNs:
-        - "arn:aws:iam::accountId:policy/eks-saga-rds-policy"
-        - "arn:aws:iam::accountId:policy/eks-saga-sns-orche-policy"
-        - "arn:aws:iam::accountId:policy/eks-saga-sqs-orche-policy"
+        - "arn:aws:iam::accountId:policy/rds-policy"
+        - "arn:aws:iam::accountId:policy/sns-policy"
+        - "arn:aws:iam::accountId:policy/sqs-policy"
 
 managedNodeGroups:
   - name: ng-db
