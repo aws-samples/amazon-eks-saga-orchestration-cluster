@@ -23,38 +23,18 @@ remove_lb() {
   echo 'Removing AWS Load Balancer controller'
   helm delete aws-load-balancer-controller -n kube-system
   eksctl delete iamserviceaccount --cluster eks-saga-orchestration --name aws-load-balancer-controller --namespace kube-system --wait
-  aws iam delete-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-saga-elb-policy
+  aws iam delete-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-saga-elb-orche-policy
 }
 
 remove_cluster() {
   EKS_CLUSTER=$1
-
-  echo 'Detaching policy from node IAM role'
-  STACK_NAME=eksctl-${EKS_CLUSTER}-cluster
-  ROLE_NAME=$(aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select(.ResourceType=="AWS::IAM::Role") | .PhysicalResourceId')
-  aws iam detach-role-policy --role-name $ROLE_NAME --policy-arn arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
   echo 'Removing cluster eks-saga-orchestration'
   eksctl delete cluster --name ${EKS_CLUSTER}
 }
 
 remove_sg() {
-  STACK_NAME=$1
-  RDS_DB_ID=$2
-  EKS_VPC=$3
-  RDS_VPC=$4
-
-  echo 'Removing inbound rules of RDS security group'
-  RDS_SG=`aws rds describe-db-instances --db-instance-identifier ${RDS_DB_ID} --query 'DBInstances[0].VpcSecurityGroups[0].VpcSecurityGroupId' --output text`
-  SUBNETS=(`aws cloudformation describe-stack-resources --stack-name $STACK_NAME | jq -r '.StackResources[] | select((.ResourceType=="AWS::EC2::Subnet") and (.LogicalResourceId | startswith("SubnetPrivate"))) | .PhysicalResourceId'`)
-
-  for s in "${SUBNETS[@]}"
-  do
-    CIDR_BLOCK=`aws ec2 describe-subnets --subnet-ids ${s} --query 'Subnets[0].CidrBlock' --output text`
-    aws ec2 revoke-security-group-ingress --group-id ${RDS_SG} --protocol tcp --port 3306 --cidr ${CIDR_BLOCK}
-  done
-
-  #
-  echo "${RDS_SG} in RDS VPC ${RDS_VPC} updated to deny MySQL traffic from EKS VPC ${EKS_VPC}"  
+  echo 'Removing security group for EKS RDS communication'
+  aws ec2 delete-security-group --group-name eks-saga-orchestration-sg
 }
 
 if [[ $# -ne 6 ]] ; then
