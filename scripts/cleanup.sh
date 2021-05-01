@@ -32,11 +32,6 @@ remove_cluster() {
   eksctl delete cluster --name ${EKS_CLUSTER}
 }
 
-remove_sg() {
-  echo 'Removing security group for EKS RDS communication'
-  aws ec2 delete-security-group --group-name eks-saga-orchestration-sg
-}
-
 if [[ $# -ne 6 ]] ; then
   echo 'USAGE: ./cleanup.sh stackName accountId rdsDb eksVpc rdsVpc clusterName'
   exit 1
@@ -51,5 +46,4 @@ EKS_CLUSTER=$6
 
 remove_objects
 remove_lb ${ACCOUNT_ID}
-remove_sg ${STACK_NAME} ${RDS_DB_ID} ${EKS_VPC} ${RDS_VPC}
 remove_cluster ${EKS_CLUSTER}
