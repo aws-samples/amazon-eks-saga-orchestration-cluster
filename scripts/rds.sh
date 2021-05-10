@@ -18,7 +18,7 @@ r_setup() {
     aws ec2 authorize-security-group-ingress --group-id ${RDS_SG} --protocol tcp --port 3306 --cidr ${n}/32
   done
 
-  aws rds modify-db-instance --db-instance-identifier ${RDS_DB_ID} --vpc-security-group-ids ${RDS_SG}
+  aws rds modify-db-instance --db-instance-identifier ${RDS_DB_ID} --vpc-security-group-ids ${RDS_SG} --query 'DBInstance.DBInstanceIdentifier' --output text
 
   echo "${RDS_SG} in RDS VPC ${RDS_VPC} updated to allow MySQL traffic from EKS VPC ${EKS_VPC} NAT gateway"
 }
