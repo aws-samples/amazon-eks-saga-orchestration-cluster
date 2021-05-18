@@ -17,15 +17,15 @@ iam:
         namespace: kube-system
         labels: { aws-usage: "alb" }
       attachPolicyARNs:
-        - "arn:aws:iam::accountId:policy/elb-policy"  
+        - "arn:aws:iam::accountId:policy/eks-saga-elb-orche-policy"
     - metadata:
         name: eks-saga
         namespace: eks-saga
         labels: { aws-usage: "application" }
       attachPolicyARNs:
-        - "arn:aws:iam::accountId:policy/rds-policy"
-        - "arn:aws:iam::accountId:policy/sns-policy"
-        - "arn:aws:iam::accountId:policy/sqs-policy"
+        - "arn:aws:iam::accountId:policy/eks-saga-rds-orche-policy"
+        - "arn:aws:iam::accountId:policy/eks-saga-sns-orche-policy"
+        - "arn:aws:iam::accountId:policy/eks-saga-sqs-orche-policy"
 
 managedNodeGroups:
   - name: ng-db
@@ -37,12 +37,12 @@ managedNodeGroups:
       attachPolicyARNs:
         - "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
         - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-        - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"    
+        - "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
   - name: ng-web
     labels: { role: web }
     instanceType: m5.large
     desiredCapacity: 1
-    privateNetworking: false    
+    privateNetworking: false
     iam:
       attachPolicyARNs:
         - "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
