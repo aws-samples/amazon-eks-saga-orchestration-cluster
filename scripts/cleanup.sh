@@ -13,17 +13,10 @@ remove_objects() {
   kubectl -n eks-saga delete ing/eks-saga-orders svc/eks-saga-orders deployment/eks-saga-orders configmap/eks-saga-orders
   echo 'Removing orchestrator microservice'
   kubectl -n eks-saga delete deployment/eks-saga-orchestrator configmap/eks-saga-orchestrator
+  echo 'Removing orders rollback microservice'
+  kubectl -n eks-saga delete deployment/eks-saga-orders-rb configmap/eks-saga-orders-rb
   echo 'Removing eks-saga namespace'
   kubectl delete namespace eks-saga
-}
-
-remove_lb() {
-  ACCOUNT_ID=$1
-
-  echo 'Removing AWS Load Balancer controller'
-  helm delete aws-load-balancer-controller -n kube-system
-  eksctl delete iamserviceaccount --cluster eks-saga-orchestration --name aws-load-balancer-controller --namespace kube-system --wait
-  aws iam delete-policy --policy-arn arn:aws:iam::${ACCOUNT_ID}:policy/eks-saga-elb-orche-policy
 }
 
 remove_cluster() {
@@ -45,5 +38,4 @@ RDS_VPC=$5
 EKS_CLUSTER=$6
 
 remove_objects
-remove_lb ${ACCOUNT_ID}
 remove_cluster ${EKS_CLUSTER}
